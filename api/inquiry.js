@@ -1,7 +1,3 @@
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -27,17 +23,5 @@ export default async function handler(req, res) {
   });
 
   const data = await airtableRes.json();
-
-  const isContact = !req.body?.fields?.["Project Title"]
-  if (airtableRes.ok && isContact) {
-    const f = req.body.fields
-    await resend.emails.send({
-      from: 'MaHalla Form <form@mahalla.berlin>',
-      to: 'info@mahalla.berlin',
-      subject: `New Contact: ${f["Contact Firstname"] || ""} ${f["contact mail"] || ""}`.trim(),
-      text: `Name: ${f["Contact Firstname"] || ""}\nEmail: ${f["contact mail"] || ""}\n\n${f["Description"] || ""}`,
-    })
-  }
-
   return res.status(airtableRes.status).json(data);
 }
