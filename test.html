@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>API Auth Test</title>
+  <style>
+    body { background: #000; color: #fff; font-family: monospace; padding: 40px; }
+    button { background: #ff0000; color: #000; border: none; padding: 12px 24px; font-size: 14px; cursor: pointer; font-family: monospace; font-weight: bold; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    pre { background: #111; border: 1px solid #333; padding: 16px; margin-top: 16px; white-space: pre-wrap; word-break: break-all; font-size: 13px; }
+    .ok { color: #00ff88; }
+    .err { color: #ff0000; }
+  </style>
+</head>
+<body>
+  <h2 style="color:#ff0000">API Auth Test</h2>
+  <p style="color:#aaa;font-size:13px">Sends a minimal POST to /api/inquiry and shows the raw Airtable response.</p>
+  <button id="btn" onclick="run()">Run Test</button>
+  <pre id="out">—</pre>
+
+  <script>
+    async function run() {
+      const btn = document.getElementById("btn")
+      const out = document.getElementById("out")
+      btn.disabled = true
+      out.className = ""
+      out.textContent = "Sending…"
+
+      try {
+        const res = await fetch("/api/inquiry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fields: {
+              "Project Title": "AUTH TEST",
+              "Project Source": "Auth Test Page",
+              "Date Inquriy": new Date().toISOString().split("T")[0],
+            }
+          })
+        })
+
+        const text = await res.text()
+        let body
+        try { body = JSON.stringify(JSON.parse(text), null, 2) }
+        catch { body = text }
+
+        out.className = res.ok ? "ok" : "err"
+        out.textContent = `Status: ${res.status} ${res.statusText}\n\n${body}`
+      } catch (e) {
+        out.className = "err"
+        out.textContent = `Network error:\n${e.message}`
+      } finally {
+        btn.disabled = false
+      }
+    }
+  </script>
+</body>
+</html>
