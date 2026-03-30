@@ -34,5 +34,6 @@ export default async function handler(req, res) {
   });
 
   const data = await brevoRes.json();
+  console.log('Brevo status:', brevoRes.status, 'Response:', JSON.stringify(data));
   return res.status(brevoRes.status).json(data);
 }
