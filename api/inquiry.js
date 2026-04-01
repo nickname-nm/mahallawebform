@@ -24,7 +24,31 @@ export default async function handler(req, res) {
   const isInquiry = req.body?.formType === 'location';
   log('info', 'request_received', { type: isInquiry ? 'inquiry' : 'contact', fields: Object.keys(fields) });
 
-  // --- Airtable ---
+  // --- Contact: email only, no Airtable ---
+  if (!isInquiry) {
+    const emailBody = `${fields['Contact Firstname'] || ''}\n\n${fields['Description'] || ''}`;
+    const subject = `contact form: ${fields['Contact Firstname'] || ''}`.trim();
+    log('info', 'email_attempt', { to: 'info@mahalla.berlin', subject, replyTo: fields['contact mail'] || null });
+    try {
+      const { data: emailData, error } = await resend.emails.send({
+        from: 'MaHalla Form <form@mahalla.nickmichi.de>',
+        to: 'info@mahalla.berlin',
+        replyTo: fields['contact mail'] || undefined,
+        subject,
+        text: emailBody,
+      });
+      if (error) {
+        log('error', 'email_failed', { error: error.message, name: error.name });
+      } else {
+        log('info', 'email_sent', { id: emailData?.id });
+      }
+    } catch (err) {
+      log('error', 'email_failed', { error: err.message });
+    }
+    return res.status(200).json({ ok: true });
+  }
+
+  // --- Inquiry: Airtable + email ---
   const url = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/inquiries`;
   let airtableRes, data;
   try {
@@ -43,32 +67,25 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Airtable request failed' });
   }
 
-  // --- Email ---
   if (airtableRes.ok) {
-    const emailBody = isInquiry
-      ? Object.entries(fields).map(([k, v]) => `${k}: ${v}`).join('\n')
-      : `${fields['Contact Firstname'] || ''}\n\n${fields['Description'] || ''}`;
-    const emailConfig = isInquiry
-      ? { to: 'location@mahalla.berlin', subject: `re: ${fields['Project Title']}` }
-      : { to: 'info@mahalla.berlin', subject: `contact form: ${fields['Contact Firstname'] || ''}`.trim() };
-
-    log('info', 'email_attempt', { to: emailConfig.to, subject: emailConfig.subject, replyTo: fields['contact mail'] || null });
-
+    const emailBody = Object.entries(fields).map(([k, v]) => `${k}: ${v}`).join('\n');
+    const subject = `re: ${fields['Project Title']}`;
+    log('info', 'email_attempt', { to: 'location@mahalla.berlin', subject, replyTo: fields['contact mail'] || null });
     try {
-      const { data, error } = await resend.emails.send({
+      const { data: emailData, error } = await resend.emails.send({
         from: 'MaHalla Form <form@mahalla.nickmichi.de>',
-        to: emailConfig.to,
+        to: 'location@mahalla.berlin',
         replyTo: fields['contact mail'] || undefined,
-        subject: emailConfig.subject,
+        subject,
         text: emailBody,
       });
       if (error) {
         log('error', 'email_failed', { error: error.message, name: error.name });
       } else {
-        log('info', 'email_sent', { id: data?.id });
+        log('info', 'email_sent', { id: emailData?.id });
       }
     } catch (err) {
-      log('error', 'email_failed', { error: err.message, code: err.statusCode });
+      log('error', 'email_failed', { error: err.message });
     }
   }
 
