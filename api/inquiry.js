@@ -45,7 +45,9 @@ export default async function handler(req, res) {
 
   // --- Email ---
   if (airtableRes.ok) {
-    const emailBody = Object.entries(fields).map(([k, v]) => `${k}: ${v}`).join('\n');
+    const emailBody = isInquiry
+      ? Object.entries(fields).map(([k, v]) => `${k}: ${v}`).join('\n')
+      : `${fields['Contact Firstname'] || ''}\n\n${fields['Description'] || ''}`;
     const emailConfig = isInquiry
       ? { to: 'location@mahalla.berlin', subject: `re: ${fields['Project Title']}` }
       : { to: 'info@mahalla.berlin', subject: 'contact webform' };
