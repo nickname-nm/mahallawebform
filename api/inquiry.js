@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       : `${fields['Contact Firstname'] || ''}\n\n${fields['Description'] || ''}`;
     const emailConfig = isInquiry
       ? { to: 'location@mahalla.berlin', subject: `re: ${fields['Project Title']}` }
-      : { to: 'info@mahalla.berlin', subject: 'contact webform' };
+      : { to: 'info@mahalla.berlin', subject: `contact form: ${fields['Contact Firstname'] || ''}`.trim() };
 
     log('info', 'email_attempt', { to: emailConfig.to, subject: emailConfig.subject, replyTo: fields['contact mail'] || null });
 
