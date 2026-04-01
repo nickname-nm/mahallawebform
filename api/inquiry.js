@@ -58,7 +58,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.AIRTABLE_PAT}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify({ fields }),
     });
     data = await airtableRes.json();
     log(airtableRes.ok ? 'info' : 'error', 'airtable_response', { status: airtableRes.status, ok: airtableRes.ok });
