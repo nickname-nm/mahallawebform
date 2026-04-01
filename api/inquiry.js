@@ -54,7 +54,7 @@ export default async function handler(req, res) {
 
     try {
       const { data, error } = await resend.emails.send({
-        from: 'MaHalla Form <form@mahalla.berlin>',
+        from: 'MaHalla Form <form@mahalla.nickmichi.de>',
         to: emailConfig.to,
         replyTo: fields['contact mail'] || undefined,
         subject: emailConfig.subject,
