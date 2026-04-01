@@ -53,14 +53,18 @@ export default async function handler(req, res) {
     log('info', 'email_attempt', { to: emailConfig.to, subject: emailConfig.subject, replyTo: fields['contact mail'] || null });
 
     try {
-      const result = await resend.emails.send({
+      const { data, error } = await resend.emails.send({
         from: 'MaHalla Form <form@mahalla.berlin>',
         to: emailConfig.to,
         replyTo: fields['contact mail'] || undefined,
         subject: emailConfig.subject,
         text: emailBody,
       });
-      log('info', 'email_sent', { id: result?.data?.id });
+      if (error) {
+        log('error', 'email_failed', { error: error.message, name: error.name });
+      } else {
+        log('info', 'email_sent', { id: data?.id });
+      }
     } catch (err) {
       log('error', 'email_failed', { error: err.message, code: err.statusCode });
     }
