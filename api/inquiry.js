@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   }
 
   const fields = req.body?.fields || {};
-  const isInquiry = !!fields['Project Title'];
+  const isInquiry = req.body?.formType === 'location';
   log('info', 'request_received', { type: isInquiry ? 'inquiry' : 'contact', fields: Object.keys(fields) });
 
   // --- Airtable ---
