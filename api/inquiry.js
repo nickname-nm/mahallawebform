@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
   // --- Contact: email only, no Airtable ---
   if (!isInquiry) {
-    const emailBody = `${fields['Contact Firstname'] || ''}\n\n${fields['Description'] || ''}`;
+    const emailBody = `${fields['Contact Firstname'] || ''}\n${fields['contact mail'] || ''}\n\n${fields['Description'] || ''}`;
     const subject = `contact form: ${fields['Contact Firstname'] || ''}`.trim();
     log('info', 'email_attempt', { to: 'info@mahalla.berlin', subject, replyTo: fields['contact mail'] || null });
     try {
