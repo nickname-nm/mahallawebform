@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const airtableToken = process.env.AIRTABLE_PAT || process.env.AIRTABLE_API_KEY;
 
 function log(level, event, data = {}) {
   console.log(JSON.stringify({ level, event, ...data, ts: new Date().toISOString() }));
@@ -49,19 +50,34 @@ export default async function handler(req, res) {
   }
 
   // --- Inquiry: Airtable + email ---
+  const missingConfig = [
+    !process.env.AIRTABLE_BASE_ID && 'AIRTABLE_BASE_ID',
+    !airtableToken && 'AIRTABLE_PAT or AIRTABLE_API_KEY',
+  ].filter(Boolean);
+
+  if (missingConfig.length) {
+    log('error', 'airtable_config_missing', { missing: missingConfig });
+    return res.status(500).json({ error: 'Airtable configuration is missing' });
+  }
+
   const url = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/inquiries`;
   let airtableRes, data;
   try {
     airtableRes = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.AIRTABLE_PAT}`,
+        'Authorization': `Bearer ${airtableToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ fields }),
     });
     data = await airtableRes.json();
-    log(airtableRes.ok ? 'info' : 'error', 'airtable_response', { status: airtableRes.status, ok: airtableRes.ok });
+    log(airtableRes.ok ? 'info' : 'error', 'airtable_response', {
+      status: airtableRes.status,
+      ok: airtableRes.ok,
+      errorType: data?.error?.type,
+      errorMessage: data?.error?.message,
+    });
   } catch (err) {
     log('error', 'airtable_fetch_failed', { error: err.message });
     return res.status(500).json({ error: 'Airtable request failed' });
