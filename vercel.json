@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/api/inquiry", "destination": "/api/inquiry.js" },
     { "source": "/api/newsletter", "destination": "/api/newsletter.js" },
+    { "source": "/api/volunteer", "destination": "/api/volunteer.js" },
+    { "source": "/api/venue-info", "destination": "/api/venue-info.js" },
     { "source": "/test", "destination": "/test.html" }
   ]
 }
