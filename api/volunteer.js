@@ -68,10 +68,18 @@ function getList(payload, key, fallbackKey, allowed) {
 function getAvailability(payload) {
   const raw = payload.Availability ?? payload.availability;
   const values = (Array.isArray(raw) ? raw : [raw]).map(clean).filter(Boolean);
-  if (values.length === 0) return '';
 
-  const known = values.filter(value => AVAILABILITY_OPTIONS.includes(value));
-  return (known.length ? known : values).join(', ');
+  if (values.length > 0) {
+    const known = values.filter(value => AVAILABILITY_OPTIONS.includes(value));
+    return (known.length ? known : values).join(', ');
+  }
+
+  // Older form builds fold availability into a pre-composed Other Answers
+  // block instead of sending it as its own key. Read it back out so those
+  // submissions still validate.
+  const composed = clean(payload['Other Answers']);
+  const match = composed.match(/^Availability:\s*(.+)$/m);
+  return match ? match[1].trim() : '';
 }
 
 function formatOtherAnswers(payload, availability) {
