@@ -6,18 +6,32 @@ const TEAM_OPTIONS = [
   'Guest management',
   'Gastronomy',
   'Bar Team',
+  // MaHalla year-round form label. Created in Airtable on first use (typecast).
+  'Decoration, Maintenance & Build Crew',
+  // Legacy Sanctum of Sound festival label - keep so the festival form keeps working.
   'Decoration & Build Crew',
   'Entrance & Ticketing',
   'Sustainability & Clean-Up',
   'Open to Anything',
 ];
 
+// Festival-only. The year-round MaHalla form sends `availability` instead.
 const FESTIVAL_DAY_OPTIONS = [
   'Friday',
   'Saturday',
   'Sunday',
   'Entire Festival',
   'Build-up days (June 28 - July 3rd)',
+];
+
+// Keep in sync with the MaHalla volunteer form. Unknown values are still
+// accepted (see getAvailability) so a wording change never silently drops data.
+const AVAILABILITY_OPTIONS = [
+  'Once or twice per week',
+  'On weekends',
+  'Only during the events',
+  "I'm very flexible with my time",
+  'I have a lot of free time',
 ];
 
 const LANGUAGE_OPTIONS = ['English', 'German', 'Other'];
@@ -49,7 +63,18 @@ function getList(payload, key, fallbackKey, allowed) {
     : cleanList(payload[fallbackKey], allowed);
 }
 
-function formatOtherAnswers(payload) {
+// Availability is free-form on purpose: it lands in the Other Answers text
+// field, so an unrecognised value is worth keeping rather than discarding.
+function getAvailability(payload) {
+  const raw = payload.Availability ?? payload.availability;
+  const values = (Array.isArray(raw) ? raw : [raw]).map(clean).filter(Boolean);
+  if (values.length === 0) return '';
+
+  const known = values.filter(value => AVAILABILITY_OPTIONS.includes(value));
+  return (known.length ? known : values).join(', ');
+}
+
+function formatOtherAnswers(payload, availability) {
   const directOtherAnswers = clean(payload['Other Answers']);
   if (directOtherAnswers) return directOtherAnswers;
 
@@ -73,9 +98,11 @@ function formatOtherAnswers(payload) {
   ]);
 
   return [
+    ['Availability', availability],
     ['Shift Preference', shifts.join(', ')],
     ['Special Skills', skills.join(', ')],
     ['Other Skill', clean(payload.otherSkill)],
+    ['Other Language', clean(payload.otherLanguage)],
     ['Can help during setup', clean(payload.setup) || clean(payload.canHelpSetup)],
     ['Can help during teardown', clean(payload.teardown) || clean(payload.canHelpTeardown)],
     ['Anything else', clean(payload.anythingElse)],
@@ -90,8 +117,9 @@ function buildFields(body) {
   const preferredTeam = getList(payload, 'Preferred Team', 'preferredTeam', TEAM_OPTIONS);
   const festivalDays = getList(payload, 'Festival Days', 'festivalDays', FESTIVAL_DAY_OPTIONS);
   const languages = getList(payload, 'Languages', 'languages', LANGUAGE_OPTIONS);
+  const availability = getAvailability(payload);
 
-  return {
+  const fields = {
     Firstname: getText(payload, 'Firstname', 'firstName'),
     Lastname: getText(payload, 'Lastname', 'lastName'),
     Email: getText(payload, 'Email', 'email').toLowerCase(),
@@ -102,11 +130,20 @@ function buildFields(body) {
     'Festival Days': festivalDays,
     Languages: languages,
     Motivation: getText(payload, 'Motivation', 'motivation'),
-    'Other Answers': formatOtherAnswers(payload),
+    'Other Answers': formatOtherAnswers(payload, availability),
   };
+
+  return { fields, payload, availability };
 }
 
-function validate(fields) {
+// `sent` counts what the client actually submitted, so a value that was
+// dropped for being unknown reports as such instead of "nothing selected".
+function sentCount(payload, key, fallbackKey) {
+  const raw = payload[key] ?? payload[fallbackKey];
+  return Array.isArray(raw) ? raw.map(clean).filter(Boolean).length : 0;
+}
+
+function validate(fields, payload, availability) {
   const errors = {};
 
   if (!fields.Firstname) errors.firstName = 'First name is required';
@@ -116,9 +153,22 @@ function validate(fields) {
   if (!fields.Phone) errors.phone = 'Phone is required';
   if (fields['Age 18+'] !== 'Yes') errors.ageConfirmed = 'Volunteers must confirm they are 18+';
   if (!fields.Motivation) errors.motivation = 'Motivation is required';
-  if (fields['Preferred Team'].length === 0) errors.preferredTeam = 'Select at least one team';
+
+  if (fields['Preferred Team'].length === 0) {
+    errors.preferredTeam = sentCount(payload, 'Preferred Team', 'preferredTeam')
+      ? 'Unknown team option'
+      : 'Select at least one team';
+  }
   if (fields['Preferred Team'].length > 3) errors.preferredTeam = 'Select up to 3 teams';
-  if (fields['Festival Days'].length === 0) errors.festivalDays = 'Select at least one festival day';
+
+  // Either form of availability satisfies this: festival days (Sanctum of
+  // Sound) or a recurring availability answer (year-round MaHalla form).
+  if (fields['Festival Days'].length === 0 && !availability) {
+    errors.festivalDays = sentCount(payload, 'Festival Days', 'festivalDays')
+      ? 'Unknown festival day option'
+      : 'Select at least one festival day or an availability';
+  }
+
   if (fields.Languages.length === 0) errors.languages = 'Select at least one language';
 
   return errors;
@@ -144,8 +194,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Airtable configuration is missing' });
   }
 
-  const fields = buildFields(req.body);
-  const errors = validate(fields);
+  const { fields, payload, availability } = buildFields(req.body);
+  const errors = validate(fields, payload, availability);
 
   if (Object.keys(errors).length > 0) {
     return res.status(400).json({ error: 'Validation failed', fields: errors });
@@ -158,7 +208,10 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ fields }),
+      // typecast lets Airtable create a select option that does not exist yet
+      // (e.g. the renamed Decoration team). Values are whitelisted above, so
+      // this cannot create arbitrary options from client input.
+      body: JSON.stringify({ fields, typecast: true }),
     });
     const data = await response.json();
 
