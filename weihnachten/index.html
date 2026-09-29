@@ -65,9 +65,11 @@ textarea{resize:vertical;min-height:88px}
 .err{margin:0;font-size:14px;color:#ff6a5c}
 
 /* ===== VIDEO ===== */
-.video{position:relative;aspect-ratio:16/9;background:#1b1a18;overflow:hidden}
-.video img,.video iframe{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0}
-.video img{filter:brightness(.7)}
+/* randlos: hebt das seitliche Padding der Section auf */
+.video{position:relative;aspect-ratio:16/9;margin:32px calc(-1 * var(--pad)) 0;background:#1b1a18;overflow:hidden}
+.video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.video::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.3);pointer-events:none}
+.video.playing::after,.video.playing button{display:none}
 .video button{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:12px;min-height:56px;padding:0 26px;font:inherit;font-weight:600;font-size:16px;color:#fff;background:var(--red);border:none;cursor:pointer}
 .video button:hover{background:var(--bone);color:var(--black)}
 .video button svg{width:14px;height:16px}
@@ -207,12 +209,12 @@ footer a:hover{color:var(--bone)}
   <!-- ===== VIDEO ===== -->
   <section class="section">
     <h2 class="h-l">So war es letztes Jahr</h2>
-    <div class="video" id="video" style="margin-top:32px">
-      <!-- Video wird erst nach Klick geladen (Ladezeit, Datenschutz) -->
-      <img src="https://i.ytimg.com/vi/01ORUva-5yI/hqdefault.jpg" alt="">
+    <div class="video" id="video">
+      <!-- Video wird erst nach Klick geladen (preload=none, ~29 MB) -->
+      <video id="klingeling" src="/weihnachten/klingeling.mp4" poster="/weihnachten/klingeling-poster.jpg" preload="none" playsinline title="Dinner Experience Klingeling in der MaHalla"></video>
       <button type="button" id="play"><svg viewBox="0 0 14 16" aria-hidden="true"><path d="M0 0l14 8-14 8z" fill="currentColor"/></svg>Video abspielen</button>
     </div>
-    <div class="cap"><span>Dinner Experience »Klingeling«, MaHalla <span class="tbd">[2025]</span></span><a href="https://www.youtube.com/watch?v=01ORUva-5yI" target="_blank" rel="noopener">Auf YouTube ansehen</a></div>
+    <div class="cap"><span>Dinner Experience »Klingeling«, MaHalla <span class="tbd">[2025]</span></span></div>
   </section>
 
 </main>
@@ -332,9 +334,11 @@ footer a:hover{color:var(--bone)}
   // ---- Video erst nach Klick laden ----
   document.getElementById('play').addEventListener('click',function(){
     var box=document.getElementById('video');
-    // Lokal geöffnet (file://) sendet der Browser keinen Referrer – YouTube verweigert dann die Einbettung (Fehler 153).
-    if(location.protocol==='file:'){window.open('https://www.youtube.com/watch?v=01ORUva-5yI','_blank','noopener');return;}
-    box.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/01ORUva-5yI?autoplay=1&rel=0&playsinline=1" title="Dinner Experience Klingeling in der MaHalla" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    var vid=document.getElementById('klingeling');
+    box.classList.add('playing');
+    vid.controls=true;
+    vid.play();
+    track('video_play',{video:'klingeling',variante:v});
   });
 
   window.protoLink=function(){alert('Im Prototyp noch nicht verlinkt.');return false;};
