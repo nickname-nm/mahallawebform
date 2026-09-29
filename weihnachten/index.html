@@ -8,6 +8,7 @@
 
 <!-- META PIXEL: Basis-Code hier einfügen (PageView). Lead-Event: siehe Script unten. -->
 
+<link rel="icon" href="/weihnachten/mahalla-logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -34,6 +35,8 @@ a{color:inherit}
 .h-m{margin:0;font-weight:700;font-variation-settings:"wdth" 110;font-size:clamp(21px,2vw,28px);line-height:1.15}
 .muted{color:var(--grey)}
 .small{font-size:14px}
+/* gedrehte Menükarten ragen minimal über den Rand – kein seitliches Wackeln beim Scrollen */
+main{overflow-x:clip}
 .section{padding:clamp(56px,8vw,112px) var(--pad);border-top:1px solid var(--line)}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:0 24px;font:inherit;font-size:16px;font-weight:600;text-decoration:none;border:1px solid var(--red);background:var(--red);color:#fff;cursor:pointer}
@@ -43,7 +46,11 @@ a{color:inherit}
 .hero{display:grid;grid-template-columns:minmax(0,7fr) minmax(360px,5fr);min-height:100svh}
 .hero-img{position:relative;overflow:hidden;background:#1b1a18}
 .hero-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.hero-img .brand{position:absolute;top:20px;left:var(--pad);font-weight:800;font-variation-settings:var(--wide);font-size:22px;color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+.hero-img .brand{position:absolute;top:20px;left:var(--pad);display:flex;align-items:center;gap:12px;font-weight:800;font-variation-settings:var(--wide);font-size:22px;color:#fff;text-decoration:none;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+.hero-img .brand img{position:static;width:46px;height:auto;filter:drop-shadow(0 1px 8px rgba(0,0,0,.45))}
+/* Überschrift skaliert mit der Formularspalte statt mit dem Fenster, sonst läuft "Weihnachtsdinner" rechts raus */
+.hero-body{container-type:inline-size}
+.hero-body .h-xl{font-size:clamp(30px,10cqi,68px);hyphens:manual}
 .hero-body{display:flex;flex-direction:column;justify-content:center;gap:20px;padding:40px var(--pad)}
 .offer{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
 .offer .price{font-weight:800;font-variation-settings:var(--wide);font-size:clamp(26px,3vw,36px);line-height:1;background:var(--red);color:#fff;padding:6px 10px 8px}
@@ -113,7 +120,7 @@ footer a:hover{color:var(--bone)}
   .hero{grid-template-columns:minmax(0,1fr);min-height:auto}
   .hero-img{height:34svh;min-height:220px}
   .hero-body{padding:22px var(--pad) 36px;gap:16px}
-  .h-xl{font-size:clamp(30px,8.5vw,44px)}
+  .h-xl,.hero-body .h-xl{font-size:clamp(30px,8.5vw,44px)}
   .intro{font-size:15px}
   .menus{grid-template-columns:minmax(0,1fr)}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -136,11 +143,11 @@ footer a:hover{color:var(--bone)}
     <div class="hero-img">
       <!-- A/B-Test: Das Bild wird per URL-Parameter gewählt: ?v=klassisch oder ?v=kunst (siehe Script) -->
       <img id="hero-img" src="/weihnachten/mahalla-klassisch-1.jpg" alt="Lange Weihnachtstafel in der MaHalla">
-      <span class="brand">MaHalla</span>
+      <a class="brand" href="https://www.mahalla.berlin/"><img src="/weihnachten/mahalla-logo.svg" alt="" width="46" height="40">MaHalla</a>
     </div>
 
     <div class="hero-body">
-      <h1 class="h-xl">Weihnachtsdinner in der MaHalla</h1>
+      <h1 class="h-xl">Weihnachts&shy;dinner in der MaHalla</h1>
       <div class="offer">
         <span class="price">ab 109 €</span>
         <span class="what">netto p. P. · 3 Gänge oder Buffet · Getränke inklusive</span>
@@ -193,6 +200,17 @@ footer a:hover{color:var(--bone)}
     </div>
   </section>
 
+  <!-- ===== VIDEO ===== -->
+  <section class="section">
+    <h2 class="h-l">Unsere Dinner Show letztes Jahr</h2>
+    <div class="video" id="video">
+      <!-- Video wird erst nach Klick geladen (preload=none, ~29 MB) -->
+      <video id="klingeling" src="/weihnachten/klingeling.mp4" poster="/weihnachten/klingeling-poster.jpg" preload="none" playsinline title="Dinner Experience Klingeling in der MaHalla"></video>
+      <button type="button" id="play"><svg viewBox="0 0 14 16" aria-hidden="true"><path d="M0 0l14 8-14 8z" fill="currentColor"/></svg>Video abspielen</button>
+    </div>
+    <div class="cap"><span>Dinner Experience »Klingeling«, MaHalla <span class="tbd">[2025]</span></span></div>
+  </section>
+
   <!-- ===== ANGEBOT ===== -->
   <section class="section">
     <h2 class="h-l">Das Kleingedruckte, groß.</h2>
@@ -205,16 +223,6 @@ footer a:hover{color:var(--bone)}
     <div class="closer">
       <a class="btn" href="#top">Persönliches Angebot erhalten</a>
     </div>
-  </section>
-  <!-- ===== VIDEO ===== -->
-  <section class="section">
-    <h2 class="h-l">So war es letztes Jahr</h2>
-    <div class="video" id="video">
-      <!-- Video wird erst nach Klick geladen (preload=none, ~29 MB) -->
-      <video id="klingeling" src="/weihnachten/klingeling.mp4" poster="/weihnachten/klingeling-poster.jpg" preload="none" playsinline title="Dinner Experience Klingeling in der MaHalla"></video>
-      <button type="button" id="play"><svg viewBox="0 0 14 16" aria-hidden="true"><path d="M0 0l14 8-14 8z" fill="currentColor"/></svg>Video abspielen</button>
-    </div>
-    <div class="cap"><span>Dinner Experience »Klingeling«, MaHalla <span class="tbd">[2025]</span></span></div>
   </section>
 
 </main>
