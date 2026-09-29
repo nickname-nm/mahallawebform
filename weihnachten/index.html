@@ -33,6 +33,8 @@ a{color:inherit}
 .h-xl{margin:0;font-weight:800;font-variation-settings:var(--wide);font-size:clamp(34px,5vw,68px);line-height:.95;letter-spacing:-.02em}
 .h-l{margin:0;font-weight:700;font-variation-settings:var(--wide);font-size:clamp(30px,4vw,54px);line-height:1;letter-spacing:-.015em}
 .h-m{margin:0;font-weight:700;font-variation-settings:"wdth" 110;font-size:clamp(21px,2vw,28px);line-height:1.15}
+/* Markenname MaHalla immer in Helvetica Neue (Systemschrift, Fallback Helvetica/Arial) */
+.mh{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-variation-settings:normal}
 .muted{color:var(--grey)}
 .small{font-size:14px}
 /* gedrehte Menükarten ragen minimal über den Rand – kein seitliches Wackeln beim Scrollen */
@@ -143,16 +145,16 @@ footer a:hover{color:var(--bone)}
     <div class="hero-img">
       <!-- A/B-Test: Das Bild wird per URL-Parameter gewählt: ?v=klassisch oder ?v=kunst (siehe Script) -->
       <img id="hero-img" src="/weihnachten/mahalla-klassisch-1.jpg" alt="Lange Weihnachtstafel in der MaHalla">
-      <a class="brand" href="https://www.mahalla.berlin/"><img src="/weihnachten/mahalla-logo.svg" alt="" width="46" height="40">MaHalla</a>
+      <a class="brand" href="https://www.mahalla.berlin/"><img src="/weihnachten/mahalla-logo.svg" alt="" width="46" height="40"><span class="mh">MaHalla</span></a>
     </div>
 
     <div class="hero-body">
-      <h1 class="h-xl">Weihnachts&shy;dinner in der MaHalla</h1>
+      <h1 class="h-xl">Weihnachts&shy;dinner in der <span class="mh">MaHalla</span></h1>
       <div class="offer">
         <span class="price">ab 109 €</span>
         <span class="what">netto p. P. · 3 Gänge oder Buffet · Getränke inklusive</span>
       </div>
-      <div class="intro"><p class="muted">Für Teams von 30 bis 250 Personen in der MaHalla, dem Art Center im Osten Berlins.</p><p>Ihr feiert exklusiv in eurem eigenen Raum im Art Center MaHalla, zwischen Ateliers und Ausstellungen – nur euer Team, keine anderen Gäste. Keine Getränkerechnung am Ende, kein Organisieren von Caterer, Raum und Anreise. <a href="https://www.mahalla.berlin/venue" target="_blank" rel="noopener">Die Räume der MaHalla ansehen</a></p></div>
+      <div class="intro"><p class="muted">Für Teams von 30 bis 250 Personen in der <span class="mh">MaHalla</span>, dem Art Center im Osten Berlins.</p><p>Ihr feiert exklusiv in eurem eigenen Raum im Art Center <span class="mh">MaHalla</span>, zwischen Ateliers und Ausstellungen – nur euer Team, keine anderen Gäste. Keine Getränkerechnung am Ende, kein Organisieren von Caterer, Raum und Anreise. <a href="https://www.mahalla.berlin/venue" target="_blank" rel="noopener">Die Räume der <span class="mh">MaHalla</span> ansehen</a></p></div>
 
       <form id="lead" novalidate>
         <div class="field"><label for="f-mail">E-Mail</label><input id="f-mail" name="email" type="email" required autocomplete="email"></div>
@@ -208,7 +210,7 @@ footer a:hover{color:var(--bone)}
       <video id="klingeling" src="/weihnachten/klingeling.mp4" poster="/weihnachten/klingeling-poster.jpg" preload="none" playsinline title="Dinner Experience Klingeling in der MaHalla"></video>
       <button type="button" id="play"><svg viewBox="0 0 14 16" aria-hidden="true"><path d="M0 0l14 8-14 8z" fill="currentColor"/></svg>Video abspielen</button>
     </div>
-    <div class="cap"><span>Dinner Experience »Klingeling«, MaHalla <span class="tbd">[2025]</span></span></div>
+    <div class="cap"><span>Dinner Experience »Klingeling«, <span class="mh">MaHalla</span> <span class="tbd">[2025]</span></span></div>
   </section>
 
   <!-- ===== ANGEBOT ===== -->
@@ -218,7 +220,7 @@ footer a:hover{color:var(--bone)}
       <div><b>ab 109 €</b><span>netto pro Person, Essen und Getränke</span></div>
       <div><b>4 h</b><span>Getränke-Flat: Wein, Crémant, Bier, Glühwein, alkoholfrei</span></div>
       <div><b>30–250</b><span>Gäste, exklusiv in einem eigenen Raum nur für euer Team</span></div>
-      <div><b>ab 10 €</b><span>pro Person für den Shuttle ab Berlin-Mitte zur MaHalla</span></div>
+      <div><b>ab 10 €</b><span>pro Person für den Shuttle ab Berlin-Mitte zur <span class="mh">MaHalla</span></span></div>
     </div>
     <div class="closer">
       <a class="btn" href="#top">Persönliches Angebot erhalten</a>
@@ -228,7 +230,7 @@ footer a:hover{color:var(--bone)}
 </main>
 
 <footer>
-  <span>MaHalla GmbH &amp; Co. KG · Wilhelminenhofstraße 76 · 12459 Berlin</span>
+  <span><span class="mh">MaHalla</span> GmbH &amp; Co. KG · Wilhelminenhofstraße 76 · 12459 Berlin</span>
   <span><a href="https://www.mahalla.berlin/venue" target="_blank" rel="noopener">Räume</a><a href="https://www.mahalla.berlin/">mahalla.berlin</a><a href="https://www.mahalla.berlin/legal" target="_blank" rel="noopener">Impressum</a><a href="https://www.mahalla.berlin/legal" target="_blank" rel="noopener">Datenschutz</a></span>
 </footer>
 
