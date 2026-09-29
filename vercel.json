@@ -1,5 +1,5 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
       "has": [
@@ -8,8 +8,11 @@
           "value": "xmas.mahalla.berlin"
         }
       ],
-      "destination": "/weihnachten/index.html"
-    },
+      "destination": "/weihnachten/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/api/inquiry",
       "destination": "/api/inquiry.js"
