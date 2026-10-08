@@ -6,7 +6,53 @@
 <title>Weihnachtsdinner in der MaHalla – ab 109 € p. P. inkl. Getränke</title>
 <meta name="description" content="Weihnachtsdinner für Teams von 30 bis 250 Personen in der MaHalla, dem Art Center im Osten Berlins. Exklusiver Raum nur für euer Team, 3-Gänge-Menü oder Buffet, Getränke inklusive, ab 109 € netto pro Person.">
 
-<!-- META PIXEL: Basis-Code hier einfügen (PageView). Lead-Event: siehe Script unten. -->
+<!-- Tracking: GA4 + Meta Pixel. Beides lädt erst nach Einwilligung im Banner (DSGVO/TDDDG). -->
+<script>
+(function(){
+  var GA_ID='G-9C5WL737PC';      // GA4-Property "MaHalla Main", Stream www.mahalla.berlin
+  var PIXEL_ID='1123025574986675'; // Meta Pixel "MaHalla Website Pixel"
+  var KEY='mh_consent';          // 'granted' | 'denied'
+
+  function loadGA(){
+    if(!GA_ID||window.gtag)return;
+    window.dataLayer=window.dataLayer||[];
+    window.gtag=function(){dataLayer.push(arguments);};
+    gtag('js',new Date());
+    gtag('config',GA_ID); // Cross-Domain kommt aus der GA4-Admin-Konfiguration des Tags
+    var s=document.createElement('script');s.async=true;
+    s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;
+    document.head.appendChild(s);
+  }
+  function loadPixel(){
+    if(!PIXEL_ID||window.fbq)return;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init',PIXEL_ID);
+    fbq('track','PageView');
+  }
+  window.mhConsent={
+    get:function(){try{return localStorage.getItem(KEY);}catch(e){return null;}},
+    set:function(val){
+      var before=this.get();
+      try{localStorage.setItem(KEY,val);}catch(e){}
+      if(val==='granted'){loadGA();loadPixel();return;}
+      if(before==='granted'){ // Widerruf: Cookies löschen und neu laden, damit nichts mehr läuft
+        window['ga-disable-'+GA_ID]=true; // sonst schreibt gtag beim Entladen _ga_<ID> neu
+        document.cookie.split(';').forEach(function(c){
+          var n=c.split('=')[0].trim();
+          if(/^(_ga|_gid|_fbp|_fbc)/.test(n))['', '; domain=.mahalla.berlin'].forEach(function(d){
+            document.cookie=n+'=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'+d;});
+        });
+        location.reload();
+      }
+    }
+  };
+  if(window.mhConsent.get()==='granted'){loadGA();loadPixel();}
+})();
+</script>
 
 <link rel="icon" href="/weihnachten/mahalla-logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -118,6 +164,17 @@ footer a{color:var(--grey);text-decoration:none}
 footer a:hover{color:var(--bone)}
 
 .sticky{display:none}
+
+/* ===== EINWILLIGUNG ===== */
+.consent{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;padding:18px var(--pad) calc(18px + env(safe-area-inset-bottom));background:var(--ink);border-top:1px solid var(--line);font-size:14px;line-height:1.45}
+.consent[hidden]{display:none}
+.consent p{margin:0;max-width:70ch;color:var(--bone)}
+.consent p a{color:var(--grey)}
+.consent .row{display:flex;gap:10px}
+.consent button{font:inherit;font-weight:700;padding:10px 18px;border:1px solid var(--bone);background:transparent;color:var(--bone);cursor:pointer}
+.consent button.yes{background:var(--bone);color:var(--black)}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--grey);cursor:pointer}
+.linkbtn:hover{color:var(--bone)}
 
 @media (max-width:900px){
   .hero{grid-template-columns:minmax(0,1fr);min-height:auto}
@@ -231,13 +288,28 @@ footer a:hover{color:var(--bone)}
 
 <footer>
   <span><span class="mh">MaHalla</span> GmbH &amp; Co. KG · Wilhelminenhofstraße 76 · 12459 Berlin</span>
-  <span><a href="https://www.mahalla.berlin/venue" target="_blank" rel="noopener">Räume</a><a href="https://www.mahalla.berlin/">mahalla.berlin</a><a href="https://www.mahalla.berlin/legal" target="_blank" rel="noopener">Impressum</a><a href="https://www.mahalla.berlin/legal" target="_blank" rel="noopener">Datenschutz</a></span>
+  <span><a href="https://www.mahalla.berlin/venue" target="_blank" rel="noopener">Räume</a><a href="https://www.mahalla.berlin/">mahalla.berlin</a><a href="https://www.mahalla.berlin/legal" target="_blank" rel="noopener">Impressum</a><a href="https://www.mahalla.berlin/legal" target="_blank" rel="noopener">Datenschutz</a><button type="button" class="linkbtn" id="consent-open">Cookie-Einstellungen</button></span>
 </footer>
 
 <div class="sticky" id="sticky" aria-hidden="true">
   <div class="p"><b>ab 109 € p. P.</b>netto, inkl. Getränke</div>
   <a class="btn" href="#top" tabindex="-1">Anfragen</a>
 </div>
+
+<div class="consent" id="consent" role="dialog" aria-label="Einwilligung" hidden>
+  <p>Wir nutzen Google Analytics und das Meta Pixel, um zu messen, welche Anzeigen zu Anfragen führen. Beides lädt nur mit eurer Zustimmung. <a href="https://www.mahalla.berlin/legal" target="_blank" rel="noopener">Datenschutz</a></p>
+  <div class="row"><button type="button" id="consent-no">Ablehnen</button><button type="button" class="yes" id="consent-yes">Akzeptieren</button></div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('consent');
+  function close(val){window.mhConsent.set(val);box.hidden=true;}
+  document.getElementById('consent-yes').addEventListener('click',function(){close('granted');});
+  document.getElementById('consent-no').addEventListener('click',function(){close('denied');});
+  document.getElementById('consent-open').addEventListener('click',function(){box.hidden=false;});
+  if(!window.mhConsent.get())box.hidden=false;
+})();
+</script>
 
 <script>
 (function(){
