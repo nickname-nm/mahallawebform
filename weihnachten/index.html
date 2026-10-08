@@ -202,8 +202,8 @@ footer a:hover{color:var(--bone)}
   <!-- ===== ERSTER SCREEN ===== -->
   <section class="hero" id="top">
     <div class="hero-img">
-      <!-- A/B-Test: Das Bild wird per URL-Parameter gewählt: ?v=klassisch oder ?v=kunst (siehe Script) -->
-      <img id="hero-img" src="/weihnachten/mahalla-klassisch-1.jpg" alt="Lange Weihnachtstafel in der MaHalla">
+      <!-- BILD ersetzen, sobald das Art-Visual fertig ist -->
+      <img id="hero-img" src="https://framerusercontent.com/images/Kw0oANAwBRo6zqL2Dwuavp0Tq0.jpg?width=1800" alt="Weihnachtstafel im künstlerischen Setup">
       <a class="brand" href="https://www.mahalla.berlin/"><img src="/weihnachten/mahalla-logo.svg" alt="" width="46" height="40"><span class="mh">MaHalla</span></a>
     </div>
 
@@ -315,21 +315,9 @@ footer a:hover{color:var(--bone)}
 (function(){
   var q=new URLSearchParams(location.search);
 
-  // ---- A/B-Variante ----
-  // Anzeige A verlinkt auf ?v=klassisch, Anzeige B auf ?v=kunst.
-  // Ohne Parameter wird zufällig gewählt und für die Sitzung gemerkt.
-  var VARIANTEN={
-    klassisch:{src:'/weihnachten/mahalla-klassisch-1.jpg',alt:'Lange Weihnachtstafel im klassischen Setup'},
-    kunst:{src:'https://framerusercontent.com/images/Kw0oANAwBRo6zqL2Dwuavp0Tq0.jpg?width=1800',alt:'Weihnachtstafel im künstlerischen Setup'} // BILD ersetzen, sobald das Art-Visual fertig ist
-  };
-  var v=q.get('v');
-  if(!VARIANTEN[v]){
-    try{v=sessionStorage.getItem('mh_v');}catch(e){}
-    if(!VARIANTEN[v]){v=Math.random()<.5?'klassisch':'kunst';}
-  }
-  try{sessionStorage.setItem('mh_v',v);}catch(e){}
-  var img=document.getElementById('hero-img');
-  img.src=VARIANTEN[v].src;img.alt=VARIANTEN[v].alt;
+  // ---- Variante ----
+  // Nur noch die Kunst-Variante (Bild steht fest im HTML). ?v= wird ignoriert.
+  var v='kunst';
   document.querySelector('input[name=variante]').value=v;
 
   // ---- Kampagnenparameter in versteckte Felder ----
