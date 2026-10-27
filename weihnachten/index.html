@@ -93,7 +93,7 @@ main{overflow-x:clip}
 /* ===== ERSTER SCREEN: Bild + Formular ===== */
 .hero{display:grid;grid-template-columns:minmax(0,7fr) minmax(360px,5fr);min-height:100svh}
 .hero-img{position:relative;overflow:hidden;background:#1b1a18}
-.hero-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-img video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hero-img .brand{position:absolute;top:20px;left:var(--pad);display:flex;align-items:center;gap:12px;font-weight:800;font-variation-settings:var(--wide);font-size:22px;color:#fff;text-decoration:none;text-shadow:0 1px 12px rgba(0,0,0,.5)}
 .hero-img .brand img{position:static;width:46px;height:auto;filter:drop-shadow(0 1px 8px rgba(0,0,0,.45))}
 /* Überschrift skaliert mit der Formularspalte statt mit dem Fenster, sonst läuft "Weihnachtsdinner" rechts raus */
@@ -202,8 +202,8 @@ footer a:hover{color:var(--bone)}
   <!-- ===== ERSTER SCREEN ===== -->
   <section class="hero" id="top">
     <div class="hero-img">
-      <!-- BILD ersetzen, sobald das Art-Visual fertig ist -->
-      <img id="hero-img" src="https://framerusercontent.com/images/Kw0oANAwBRo6zqL2Dwuavp0Tq0.jpg?width=1800" alt="Weihnachtstafel im künstlerischen Setup">
+      <!-- Stumme 15-s-Schleife aus dem Dinner-Show-Video (0:06–0:21), 4:3 zugeschnitten, ~3 MB -->
+      <video id="hero-video" src="/weihnachten/hero-loop.mp4" poster="/weihnachten/hero-poster.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
       <a class="brand" href="https://www.mahalla.berlin/"><img src="/weihnachten/mahalla-logo.svg" alt="" width="46" height="40"><span class="mh">MaHalla</span></a>
     </div>
 
@@ -319,6 +319,10 @@ footer a:hover{color:var(--bone)}
   // Nur noch die Kunst-Variante (Bild steht fest im HTML). ?v= wird ignoriert.
   var v='kunst';
   document.querySelector('input[name=variante]').value=v;
+
+  // ---- Hero-Video: bei "Bewegung reduzieren" nur das Standbild zeigen ----
+  var heroVideo=document.getElementById('hero-video');
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){heroVideo.removeAttribute('autoplay');heroVideo.pause();}
 
   // ---- Kampagnenparameter in versteckte Felder ----
   ['utm_source','utm_medium','utm_campaign','utm_content','fbclid'].forEach(function(k){
