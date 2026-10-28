@@ -110,14 +110,16 @@ main{overflow-x:clip}
 form{display:grid;gap:14px}
 .field{display:flex;flex-direction:column;gap:6px}
 label{font-size:14px;font-weight:600}
-label span{font-weight:400;color:var(--grey)}
-input[type=email],input[type=tel],input[type=number],textarea{width:100%;min-height:52px;padding:12px 14px;font:inherit;font-size:16px;color:var(--bone);background:var(--ink);border:1px solid #47453f;border-radius:0}
+.field label span{font-weight:400;color:var(--grey)}
+input[type=email],input[type=tel],input[type=number],input[type=date],textarea{width:100%;min-height:52px;padding:12px 14px;font:inherit;font-size:16px;color:var(--bone);background:var(--ink);border:1px solid #47453f;border-radius:0}
 input:focus,textarea:focus{border-color:var(--red);outline:none}
 textarea{resize:vertical;min-height:88px}
 .note{margin:0;font-size:13px;line-height:1.45;color:var(--grey)}
 .done{border:1px solid var(--red);padding:28px}
 .done[hidden],form[hidden],.err[hidden]{display:none}
 .err{margin:0;font-size:14px;color:#ff6a5c}
+.form-lead{margin:0;font-size:15px;line-height:1.45;color:var(--grey)}
+.form-lead b{display:block;margin-bottom:2px;font-size:18px;color:var(--bone);font-variation-settings:"wdth" 110}
 
 /* ===== VIDEO ===== */
 /* randlos: hebt das seitliche Padding der Section auf */
@@ -130,15 +132,71 @@ textarea{resize:vertical;min-height:88px}
 .video button svg{width:14px;height:16px}
 .cap{display:flex;justify-content:space-between;gap:16px;margin-top:14px;font-size:14px;color:var(--grey)}
 
-/* ===== MENÜKARTEN ===== */
-.menus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,2.5vw,32px);margin-top:36px;align-items:stretch}
-.card{display:flex;flex-direction:column;padding:clamp(28px,4vw,56px) clamp(22px,3.5vw,48px);text-align:center}
+/* ===== ZUSAMMENSTELLEN (Vorbild: Angebotsseite im Angebotseditor, aber ohne Preise) ===== */
+.lede{margin:14px 0 0;max-width:60ch}
+.step{display:flex;align-items:center;gap:14px;margin:64px 0 0;font-weight:700;font-variation-settings:"wdth" 110;font-size:clamp(22px,2.2vw,30px);line-height:1.15}
+.step>span{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:50%;background:var(--red);color:#fff;font-size:17px;font-variation-settings:normal}
+.step small{font-size:15px;font-weight:400;color:var(--grey)}
+.step+.muted{margin:10px 0 0;max-width:60ch}
+.incl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 32px;margin:22px 0 0;padding:0;list-style:none;font-size:15px;color:var(--grey)}
+.incl li{position:relative;padding-left:22px}
+.incl li::before{content:"✓";position:absolute;left:0;color:var(--red);font-weight:700}
+
+/* ===== MENÜKARTEN (auswählbar) ===== */
+.menus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,2.5vw,32px);margin-top:30px;align-items:stretch}
+.card{position:relative;display:flex;flex-direction:column;padding:clamp(28px,4vw,56px) clamp(22px,3.5vw,48px);text-align:center;cursor:pointer;transition:transform .15s,opacity .15s,box-shadow .15s}
+.card input{position:absolute;opacity:0;pointer-events:none}
+.card::before{content:"";position:absolute;top:18px;right:18px;width:26px;height:26px;border:2px solid currentColor;border-radius:50%}
+.card:hover{box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.card:has(input:checked){outline:3px solid var(--bone);outline-offset:8px}
+.card:has(input:focus-visible){outline:3px dashed var(--bone);outline-offset:8px}
+.card.seated:has(input:checked)::before{background:currentColor;box-shadow:inset 0 0 0 5px var(--bone)}
+.card.buffet:has(input:checked)::before{background:currentColor;box-shadow:inset 0 0 0 5px var(--red)}
+.menus:has(input:checked) .card:not(:has(input:checked)){opacity:.55}
+.menus:has(input:checked) .card:not(:has(input:checked)):hover{opacity:.85}
+.card .pick{align-self:center;display:inline-flex;margin-top:auto;padding:13px 24px;font-size:16px;font-weight:700;border:2px solid currentColor}
+.card .pickwrap{margin-top:auto;padding-top:34px}
+.card:hover .pick,.card:has(input:checked) .pick{background:currentColor}
+.card.seated:hover .pick span,.card.seated:has(input:checked) .pick span{color:var(--bone)}
+.card.buffet:hover .pick span,.card.buffet:has(input:checked) .pick span{color:var(--red)}
+.card .pick .on{display:none}
+.card:has(input:checked) .pick .off{display:none}
+.card:has(input:checked) .pick .on{display:inline}
+
+/* ===== EXTRAS ===== */
+.addons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:26px}
+.addon{position:relative;display:flex;flex-direction:column;gap:8px;min-height:150px;padding:24px 22px 22px;background:var(--black);border:1px solid var(--line);cursor:pointer;transition:background .15s,box-shadow .15s}
+.addon:hover{background:var(--ink)}
+.addon input{position:absolute;opacity:0;pointer-events:none}
+.addon::after{content:"+";position:absolute;top:18px;right:18px;display:grid;place-items:center;width:30px;height:30px;border:1.5px solid var(--grey);border-radius:50%;font-size:20px;line-height:1;color:var(--grey);transition:all .15s}
+.addon:hover::after{border-color:var(--bone);color:var(--bone)}
+.addon:has(input:checked){background:var(--ink);box-shadow:inset 0 0 0 2px var(--red)}
+.addon:has(input:checked)::after{content:"✓";background:var(--red);border-color:var(--red);color:#fff;font-size:16px}
+.addon:has(input:focus-visible){outline:2px dashed var(--bone);outline-offset:-6px}
+.addon .n{padding-right:40px;font-size:21px;line-height:1.15;font-weight:700;font-variation-settings:"wdth" 110}
+.addon .d{font-size:15px;line-height:1.45;color:var(--grey)}
+.addon.ap-main{grid-column:1/-1;min-height:0;border-color:var(--red)}
+.addon .tag{align-self:flex-start;padding:3px 8px;background:var(--red);color:#fff;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.addon:has(input:disabled){opacity:.38;cursor:not-allowed}
+.addon:has(input:disabled):hover{background:var(--black)}
+
+/* ===== AUSWAHL ABSCHICKEN ===== */
+.send{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(24px,4vw,64px);margin-top:26px;align-items:start}
+.summary{padding:26px 24px;background:var(--ink);border:1px solid var(--line)}
+.summary h4{margin:0 0 14px;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--grey)}
+.summary dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px;margin:0;font-size:16px}
+.summary dt{color:var(--grey)}
+.summary dd{margin:0}
+.summary .empty{color:#ff6a5c}
+.summary p{margin:16px 0 0;font-size:13px;line-height:1.45;color:var(--grey)}
+.send .done{margin:0}
 .card.seated .c{margin-top:auto;padding-top:30px}
 .card.seated .c:last-child{margin-bottom:auto}
 .card.seated{background:var(--bone);color:var(--black);transform:rotate(-.6deg)}
 .card.buffet{background:var(--red);color:#fff;transform:rotate(.5deg)}
 .card.buffet .c{margin-top:22px}
-.card .kind{margin:0;font-weight:800;font-variation-settings:var(--wide);font-size:clamp(26px,3vw,40px);line-height:1;letter-spacing:-.01em}
+/* Platz für den Auswahl-Kreis oben rechts */
+.card .kind{margin:0;padding:0 34px;font-weight:800;font-variation-settings:var(--wide);font-size:clamp(26px,3vw,40px);line-height:1;letter-spacing:-.01em}
 .card .c{margin-top:30px}
 .card .c h4{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
 .card.seated .c h4{color:var(--red)}
@@ -184,11 +242,15 @@ footer a:hover{color:var(--bone)}
   .intro{font-size:15px}
   .menus{grid-template-columns:minmax(0,1fr)}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .addons{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .send{grid-template-columns:minmax(0,1fr)}
+  .incl{grid-template-columns:minmax(0,1fr)}
   .sticky{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:25;align-items:center;justify-content:space-between;gap:12px;padding:10px var(--pad) calc(10px + env(safe-area-inset-bottom));background:var(--black);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .2s}
   .sticky.show{transform:none}
   .sticky .p{font-size:14px;line-height:1.3}
   .sticky .p b{display:block;font-size:17px}
 }
+@media (max-width:560px){.addons{grid-template-columns:minmax(0,1fr)}.addon{min-height:0}}
 @media (max-width:520px){
   .card.seated,.card.buffet{transform:none}
   .facts{grid-template-columns:minmax(0,1fr)}
@@ -215,6 +277,7 @@ footer a:hover{color:var(--bone)}
       </div>
       <div class="intro"><p class="muted">Für Teams von 30 bis 250 Personen in der <span class="mh">MaHalla</span>, dem Art Center im Osten Berlins.</p><p>Ihr feiert exklusiv in eurem eigenen Raum im Art Center <span class="mh">MaHalla</span>, zwischen Ateliers und Ausstellungen – nur euer Team, keine anderen Gäste. Keine Getränkerechnung am Ende, kein Organisieren von Caterer, Raum und Anreise. <a href="https://www.mahalla.berlin/venue" target="_blank" rel="noopener">Die Räume der <span class="mh">MaHalla</span> ansehen</a></p></div>
 
+      <p class="form-lead"><b>Persönliches Angebot vom Team</b>Hinterlasst eure Kontaktdaten, unser Team meldet sich bei euch. Oder <a href="#zusammenstellen">stellt eure Feier selbst zusammen</a>.</p>
       <form id="lead" novalidate>
         <div class="field"><label for="f-mail">E-Mail</label><input id="f-mail" name="email" type="email" required autocomplete="email"></div>
         <div class="field"><label for="f-tel">Telefon</label><input id="f-tel" name="telefon" type="tel" required autocomplete="tel"></div>
@@ -238,27 +301,6 @@ footer a:hover{color:var(--bone)}
     </div>
   </section>
 
-  <!-- ===== MENÜS ===== -->
-  <section class="section" id="menues">
-    <h2 class="h-l">Menü oder Buffet</h2>
-    <p class="muted" style="margin:14px 0 0">Beide ab 109 € p. P., 4 Stunden Getränke-Flat inklusive. Zu jedem Gang eine vegane Variante.</p>
-    <div class="menus">
-      <article class="card seated">
-        <h3 class="kind">Gesetztes Dinner</h3>
-        <div class="c"><h4>Vorspeise</h4><p class="dish">Geröstete Rote Bete, Ziegenkäse-Mousse, Blutorange, Haselnuss</p><p class="veg">vegan mit Cashew-Mousse</p></div>
-        <div class="c"><h4>Hauptgang</h4><p class="dish">Bœuf Bourguignon, geröstete Trauben, Püree von gegrilltem Mais, Knoblauchbrot</p><p class="veg">vegan als Pilz-Bourguignon</p></div>
-        <div class="c"><h4>Dessert</h4><p class="dish">Karamellisierte Äpfel, Vanille-Tonka-Creme, geröstete Mandeln</p><p class="veg">vegan mit veganer Creme</p></div>
-      </article>
-      <article class="card buffet">
-        <h3 class="kind">Winterbuffet</h3>
-        <div class="c"><h4>Suppen</h4><p class="dish">Kürbis-Chai mit Kokos<br>Maronensuppe mit Croutons</p></div>
-        <div class="c"><h4>Vorspeisen</h4><p class="dish">Rote-Bete-Hummus, Ofengemüse, Falafel<br>Quiche mit Pfifferlingen und Lauch<br>Feldsalat, Birne, karamellisierte Walnüsse<br>Rotkohl-Coleslaw mit Orange und Feta</p></div>
-        <div class="c"><h4>Hauptgerichte</h4><p class="dish">Entenbraten, Rotkohl, Grünkohl, Klöße<br>Kalbsbraten mit Kartoffelgratin<br>Käsespätzle mit Röstzwiebeln<br>Spinatknödel mit Pilzrahm<br>Shepherd’s Pie mit Süßkartoffel<br>Gemüse-Köttbullar, Preiselbeeren</p></div>
-        <div class="c"><h4>Desserts</h4><p class="dish">Cheesecake mit Zimt-Blaubeeren<br>Marillenknödel, Zwetschgenröster<br>Mascarpone, Kirschen, Marzipan</p></div>
-      </article>
-    </div>
-  </section>
-
   <!-- ===== ANGEBOT ===== -->
   <section class="section">
     <h2 class="h-l">Zahlen, Daten, Fakten</h2>
@@ -269,9 +311,102 @@ footer a:hover{color:var(--bone)}
       <div><b>ab 10 €</b><span>pro Person für den Shuttle, z.B. aus Berlin-Mitte, zur <span class="mh">MaHalla</span></span></div>
     </div>
     <div class="closer">
-      <a class="btn" href="#top">Persönliches Angebot erhalten</a>
+      <a class="btn" href="#zusammenstellen">Feier zusammenstellen</a>
     </div>
   </section>
+
+  <!-- ===== ZUSAMMENSTELLEN ===== -->
+  <!-- Aufbau wie die Angebotsseite im Angebotseditor (mahalla_os, templates/xmas-2026.json), bewusst ohne Preise. -->
+  <section class="section" id="zusammenstellen">
+    <h2 class="h-l">Stellt eure Weihnachtsfeier zusammen</h2>
+    <p class="muted lede">Wählt Paket und Extras und schickt uns eure Auswahl. Unser Team erstellt euch daraus ein persönliches Angebot.</p>
+
+    <h3 class="step"><span>1</span>Paket wählen</h3>
+    <p class="muted">Beide Pakete mit 4 Stunden Getränke-Flat und eurem Raum exklusiv für euer Team. Zu jedem Gang gibt es eine vegane Variante.</p>
+    <div class="menus" role="radiogroup" aria-label="Paket wählen">
+      <label class="card seated">
+        <input type="radio" name="paket" value="Gesetztes Dinner" form="konfig">
+        <h3 class="kind">Gesetztes Dinner</h3>
+        <div class="c"><h4>Vorspeise</h4><p class="dish">Geröstete Rote Bete, Ziegenkäse-Mousse, Blutorange, Haselnuss</p><p class="veg">vegan mit Cashew-Mousse</p></div>
+        <div class="c"><h4>Hauptgang</h4><p class="dish">Bœuf Bourguignon, geröstete Trauben, Püree von gegrilltem Mais, Knoblauchbrot</p><p class="veg">vegan als Pilz-Bourguignon</p></div>
+        <div class="c"><h4>Dessert</h4><p class="dish">Karamellisierte Äpfel, Vanille-Tonka-Creme, geröstete Mandeln</p><p class="veg">vegan mit veganer Creme</p></div>
+        <span class="pickwrap"><span class="pick"><span class="off">Dieses Paket wählen</span><span class="on">✓ Gewählt</span></span></span>
+      </label>
+      <label class="card buffet">
+        <input type="radio" name="paket" value="Winterbuffet" form="konfig">
+        <h3 class="kind">Winterbuffet</h3>
+        <div class="c"><h4>Suppen</h4><p class="dish">Kürbis-Chai mit Kokos<br>Maronensuppe mit Croutons</p></div>
+        <div class="c"><h4>Vorspeisen</h4><p class="dish">Rote-Bete-Hummus, Ofengemüse, Falafel<br>Quiche mit Pfifferlingen und Lauch<br>Feldsalat, Birne, karamellisierte Walnüsse<br>Rotkohl-Coleslaw mit Orange und Feta</p></div>
+        <div class="c"><h4>Hauptgerichte</h4><p class="dish">Entenbraten, Rotkohl, Grünkohl, Klöße<br>Kalbsbraten mit Kartoffelgratin<br>Käsespätzle mit Röstzwiebeln<br>Spinatknödel mit Pilzrahm<br>Shepherd’s Pie mit Süßkartoffel<br>Gemüse-Köttbullar, Preiselbeeren</p></div>
+        <div class="c"><h4>Desserts</h4><p class="dish">Cheesecake mit Zimt-Blaubeeren<br>Marillenknödel, Zwetschgenröster<br>Mascarpone, Kirschen, Marzipan</p></div>
+        <span class="pickwrap"><span class="pick"><span class="off">Dieses Paket wählen</span><span class="on">✓ Gewählt</span></span></span>
+      </label>
+    </div>
+
+    <h3 class="step"><span>2</span>Immer dabei</h3>
+    <ul class="incl">
+      <li>Exklusive Nutzung eures Raums inklusive Auf- und Abbau</li>
+      <li>Weihnachtliches Set-Design mit Raum- und Tischdeko und Kerzen</li>
+      <li>Lange Tafeln mit weißen Tischdecken, Stühlen, Stoffservietten und Gläsern</li>
+      <li>Sound und Licht im Dinner-Raum</li>
+      <li>Event-Producer, Facility-Manager und Barpersonal</li>
+      <li>Heizung, Nebenkosten, Sanitäranlagen und Endreinigung</li>
+    </ul>
+
+    <h3 class="step"><span>3</span>Extras dazu <small>(optional)</small></h3>
+    <div class="addons">
+      <label class="addon"><input type="checkbox" name="extras" value="Shuttle" form="konfig"><span class="n">Shuttle</span><span class="d">Hin- und Rücktransfer für eure Gäste, z.B. aus Berlin-Mitte zur <span class="mh">MaHalla</span>.</span></label>
+      <label class="addon"><input type="checkbox" name="extras" value="Longdrinks" form="konfig"><span class="n">Longdrinks</span><span class="d">Ergänzt die Getränke-Flat um Longdrinks.</span></label>
+      <label class="addon"><input type="checkbox" name="extras" value="Garderobe" form="konfig"><span class="n">Garderobe</span><span class="d">Besetzte Garderobe für den ganzen Abend.</span></label>
+      <label class="addon"><input type="checkbox" name="extras" value="Gästemanagement" form="konfig"><span class="n">Gästemanagement</span><span class="d">Check-in am Eingang mit eurer Gästeliste.</span></label>
+      <label class="addon"><input type="checkbox" name="extras" value="Performance-Act" form="konfig"><span class="n">Performance-Act</span><span class="d">Eine Live-Performance während des Abends.</span></label>
+      <label class="addon"><input type="checkbox" name="extras" value="Liveband" form="konfig"><span class="n">Liveband</span><span class="d">Eine Liveband spielt während des Dinners.</span></label>
+    </div>
+
+    <h3 class="step"><span>4</span>After-Party <small>(optional)</small></h3>
+    <p class="muted">Nach dem Dinner geht es weiter, von 22 bis 2 Uhr mit Club-Sound. Wählt die After-Party und dann, was ihr dafür braucht.</p>
+    <div class="addons" id="afterparty">
+      <label class="addon ap-main"><input type="checkbox" name="afterparty" value="After-Party" form="konfig" id="ap-main"><span class="tag">Paket</span><span class="n">After-Party</span><span class="d">Von 22 bis 2 Uhr, mit Club-Sound.</span></label>
+      <label class="addon"><input type="checkbox" name="ap_extras" value="Longdrinks (After-Party)" form="konfig" disabled><span class="n">Longdrinks</span><span class="d">Getränkepaket mit Longdrinks für die After-Party.</span></label>
+      <label class="addon"><input type="checkbox" name="ap_extras" value="Light Jockey" form="konfig" disabled><span class="n">Light Jockey</span><span class="d">Eine Live-Lichtshow zur Musik des DJs.</span></label>
+      <label class="addon"><input type="checkbox" name="ap_extras" value="Garderobe (After-Party)" form="konfig" disabled><span class="n">Garderobe</span><span class="d">Besetzte Garderobe bis zum Ende der After-Party.</span></label>
+      <label class="addon"><input type="checkbox" name="ap_extras" value="Gästemanagement (After-Party)" form="konfig" disabled><span class="n">Gästemanagement</span><span class="d">Check-in am Eingang mit eurer Gästeliste.</span></label>
+      <label class="addon"><input type="checkbox" name="ap_extras" value="Performance-Act (After-Party)" form="konfig" disabled><span class="n">Performance-Act</span><span class="d">Eine Live-Performance während der After-Party.</span></label>
+      <label class="addon"><input type="checkbox" name="ap_extras" value="DJ" form="konfig" disabled><span class="n">DJ</span><span class="d">Ein DJ für die After-Party. Ab 150 Gästen inklusive.</span></label>
+    </div>
+
+    <h3 class="step"><span>5</span>Auswahl abschicken</h3>
+    <div class="send">
+      <div class="summary" aria-live="polite">
+        <h4>Eure Auswahl</h4>
+        <dl id="summary"></dl>
+        <p>Unverbindlich. Unser Team meldet sich innerhalb von 24 Stunden mit freien Terminen und eurem persönlichen Angebot.</p>
+      </div>
+      <div>
+        <form id="konfig" novalidate>
+          <div class="field"><label for="k-mail">E-Mail</label><input id="k-mail" name="email" type="email" required autocomplete="email"></div>
+          <div class="field"><label for="k-tel">Telefon</label><input id="k-tel" name="telefon" type="tel" required autocomplete="tel"></div>
+          <div class="field"><label for="k-gaeste">Gästezahl <span>(optional)</span></label><input id="k-gaeste" name="gaeste" type="number" min="1" inputmode="numeric"></div>
+          <div class="field"><label for="k-datum">Wunschdatum <span>(optional)</span></label><input id="k-datum" name="datum" type="date" min="2026-11-01" max="2027-01-31"></div>
+          <div class="field"><label for="k-msg">Nachricht <span>(optional)</span></label><textarea id="k-msg" name="nachricht" rows="3" placeholder="Fragen, Wünsche, Ideen"></textarea></div>
+
+          <!-- Tracking, wird per Script befüllt -->
+          <input type="hidden" name="variante">
+          <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign"><input type="hidden" name="utm_content"><input type="hidden" name="fbclid">
+
+          <button class="btn" type="submit">Auswahl senden</button>
+          <p class="err" id="err2" role="alert" hidden>Bitte wählt oben ein Paket und gebt eine gültige E-Mail-Adresse und eine Telefonnummer an.</p>
+          <p class="err" id="err2-send" role="alert" hidden>Die Anfrage konnte nicht gesendet werden. Bitte versucht es noch einmal oder schreibt an <a href="mailto:location@mahalla.berlin">location@mahalla.berlin</a>.</p>
+          <p class="note">Eure Daten nutzen wir nur für diese Anfrage – <a href="https://www.mahalla.berlin/legal" target="_blank" rel="noopener">Datenschutz</a>.</p>
+        </form>
+        <div class="done" id="done2" hidden tabindex="-1">
+          <h2 class="h-m">Auswahl gesendet</h2>
+          <p style="margin:10px 0 0">Danke. Unser Team meldet sich innerhalb von 24 Stunden mit eurem persönlichen Angebot.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
 
   <!-- ===== VIDEO ===== -->
   <section class="section">
@@ -318,7 +453,7 @@ footer a:hover{color:var(--bone)}
   // ---- Variante ----
   // Nur noch die Kunst-Variante (Bild steht fest im HTML). ?v= wird ignoriert.
   var v='kunst';
-  document.querySelector('input[name=variante]').value=v;
+  document.querySelectorAll('input[name=variante]').forEach(function(el){el.value=v;});
 
   // ---- Hero-Video: bei "Bewegung reduzieren" nur das Standbild zeigen ----
   var heroVideo=document.getElementById('hero-video');
@@ -326,8 +461,8 @@ footer a:hover{color:var(--bone)}
 
   // ---- Kampagnenparameter in versteckte Felder ----
   ['utm_source','utm_medium','utm_campaign','utm_content','fbclid'].forEach(function(k){
-    var el=document.querySelector('input[name="'+k+'"]');
-    if(el&&q.get(k))el.value=q.get(k);
+    if(!q.get(k))return;
+    document.querySelectorAll('input[name="'+k+'"]').forEach(function(el){el.value=q.get(k);});
   });
 
   // ---- Sticky-Button auf dem Handy, sobald das Formular aus dem Bild ist ----
@@ -342,32 +477,68 @@ footer a:hover{color:var(--bone)}
     }).observe(document.getElementById('top'));
   }
 
-  // ---- Absenden ----
-  var err=document.getElementById('err');
-  var done=document.getElementById('done');
-  var errSend=document.getElementById('err-send');
-  var btn=form.querySelector('button[type=submit]');
+  // ---- Konfigurator: After-Party-Extras erst nach Wahl der After-Party, Auswahl zusammenfassen ----
+  var konfig=document.getElementById('konfig');
+  var apMain=document.getElementById('ap-main');
+  var apExtras=document.querySelectorAll('input[name=ap_extras]');
+  var summary=document.getElementById('summary');
 
+  function values(name){
+    return Array.prototype.map.call(document.querySelectorAll('input[name="'+name+'"]:checked'),function(el){return el.value;});
+  }
+  // Was der Kunde gewählt hat, als Zeilen [Bezeichnung, Wert]. Wird angezeigt und mitgeschickt.
+  function selection(){
+    var pkg=values('paket')[0];
+    var ap=apMain.checked?['ja'].concat(values('ap_extras').map(function(x){return x.replace(' (After-Party)','');})).join(', ').replace('ja, ','ja – '):'nein';
+    return [
+      ['Paket',pkg||''],
+      ['Extras',values('extras').join(', ')||'keine'],
+      ['After-Party',ap]
+    ];
+  }
+  function renderSummary(){
+    summary.innerHTML='';
+    selection().forEach(function(row){
+      var dt=document.createElement('dt');dt.textContent=row[0];
+      var dd=document.createElement('dd');
+      if(row[1]){dd.textContent=row[1];}else{dd.textContent='noch nicht gewählt';dd.className='empty';}
+      summary.append(dt,dd);
+    });
+  }
+  apMain.addEventListener('change',function(){
+    apExtras.forEach(function(el){el.disabled=!apMain.checked;if(!apMain.checked)el.checked=false;});
+  });
+  document.getElementById('zusammenstellen').addEventListener('change',renderSummary);
+  renderSummary();
+
+  // ---- Absenden (beide Formulare) ----
   // Feldnamen = Spaltennamen der Airtable-Tabelle "Inquiries". /api/inquiry reicht `fields` 1:1 durch.
-  function payload(){
-    var f=new FormData(form);
+  function payload(f,kind){
     var get=function(k){return (f.get(k)||'').toString().trim();};
     var utm=['utm_source','utm_medium','utm_campaign','utm_content'].map(get);
     var tracking=[
+      'Formular: '+(kind==='konfigurator'?'Konfigurator':'Kurzanfrage'),
       'Variante: '+get('variante'),
       'UTM: '+(utm.filter(Boolean).join(' / ')||'–'),
       'fbclid: '+(get('fbclid')||'–'),
       'Referrer: '+(document.referrer||'–')
     ].join('\n');
+    var text=get('nachricht')||'(keine Nachricht)';
+    if(kind==='konfigurator'){
+      var datum=get('datum');
+      var lines=selection().map(function(row){return row[0]+': '+row[1];});
+      lines.push('Wunschdatum: '+(datum?datum.split('-').reverse().join('.'):'–'));
+      text=lines.join('\n')+'\n\nNachricht: '+text;
+    }
     var fields={
-      'Project Title':'Weihnachtsdinner – '+get('email'),
+      'Project Title':'Weihnachtsdinner'+(kind==='konfigurator'?' (Auswahl)':'')+' – '+get('email'),
       'Project Pipeline':'Corp. X-Mas 2026',
       'Project Source':'Webform',
       'Date Inquriy':new Date().toISOString().slice(0,10),
       'contact mail':get('email'),
       'contact phone':get('telefon'),
-      'Lead source':'Weihnachtsdinner LP'+(utm[0]?' · '+utm[0]:''),
-      'Description':(get('nachricht')||'(keine Nachricht)')+'\n\n---\n'+tracking
+      'Lead source':'Weihnachtsdinner LP'+(kind==='konfigurator'?' · Konfigurator':'')+(utm[0]?' · '+utm[0]:''),
+      'Description':text+'\n\n---\n'+tracking
     };
     var pax=parseInt(get('gaeste'),10);
     if(pax>0)fields['PAX']=pax;
@@ -382,28 +553,36 @@ footer a:hover{color:var(--bone)}
     }catch(e){}
   }
 
-  form.addEventListener('submit',function(e){
-    e.preventDefault();
-    errSend.hidden=true;
-    if(!form.checkValidity()){err.hidden=false;form.reportValidity();return;}
-    err.hidden=true;
-    btn.disabled=true;var label=btn.textContent;btn.textContent='Wird gesendet …';
+  // Beide Formulare lösen dasselbe Event aus (GA4 generate_lead, Meta Lead), damit Meta auf ein Ziel optimiert.
+  // form_variant / content_category zeigen, welches Formular es war.
+  function wire(form,kind,errEl,errSendEl,doneEl,extraCheck){
+    var btn=form.querySelector('button[type=submit]');
+    form.addEventListener('submit',function(e){
+      e.preventDefault();
+      errSendEl.hidden=true;
+      if(!form.checkValidity()||(extraCheck&&!extraCheck())){errEl.hidden=false;form.reportValidity();return;}
+      errEl.hidden=true;
+      btn.disabled=true;var label=btn.textContent;btn.textContent='Wird gesendet …';
 
-    fetch('/api/inquiry',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload())
-    }).then(function(r){
-      if(!r.ok)throw new Error('HTTP '+r.status);
-      // Nur hier zählt es als Lead.
-      track('generate_lead',{form_type:'weihnachtsdinner',variante:v});
-      try{if(window.fbq)window.fbq('track','Lead',{content_name:'weihnachtsdinner',variante:v});}catch(e){}
-      form.hidden=true;done.hidden=false;done.focus();
-    }).catch(function(){
-      errSend.hidden=false;
-      btn.disabled=false;btn.textContent=label;
+      fetch('/api/inquiry',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload(new FormData(form),kind))
+      }).then(function(r){
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        // Nur hier zählt es als Lead.
+        track('generate_lead',{form_type:'weihnachtsdinner',form_variant:kind,variante:v});
+        try{if(window.fbq)window.fbq('track','Lead',{content_name:'weihnachtsdinner',content_category:kind,variante:v});}catch(e){}
+        form.hidden=true;doneEl.hidden=false;doneEl.focus();
+      }).catch(function(){
+        errSendEl.hidden=false;
+        btn.disabled=false;btn.textContent=label;
+      });
     });
-  });
+  }
+  wire(form,'kurz',document.getElementById('err'),document.getElementById('err-send'),document.getElementById('done'));
+  wire(konfig,'konfigurator',document.getElementById('err2'),document.getElementById('err2-send'),document.getElementById('done2'),
+    function(){return values('paket').length>0;});
 
   // ---- Video erst nach Klick laden ----
   document.getElementById('play').addEventListener('click',function(){
