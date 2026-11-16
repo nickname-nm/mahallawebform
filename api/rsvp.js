@@ -247,7 +247,7 @@ async function sendConfirmation(email, vorname, kommt, personen) {
 
   try {
     const { error } = await resend.emails.send({
-      from: 'MaHalla <form@mahalla.nickmichi.de>',
+      from: 'MaHalla <forms@mahalla.berlin>',
       to: email,
       subject: 'Deine Antwort ist da',
       text,
