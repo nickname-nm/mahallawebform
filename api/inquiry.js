@@ -16,6 +16,10 @@ const TRACKING_FIELDS = {
   landing_page: 'Landing Page',
 };
 
+// Nur diese beiden Werte bekommen eine eigene Spalte in Airtable. Alle anderen
+// Tracking-Werte stehen weiterhin in der Mail, aber nicht in der Tabelle.
+const AIRTABLE_TRACKING_COLUMNS = ['UTM Source', 'UTM Campaign'];
+
 function log(level, event, data = {}) {
   console.log(JSON.stringify({ level, event, ...data, ts: new Date().toISOString() }));
 }
@@ -122,15 +126,20 @@ export default async function handler(req, res) {
 
   let airtableRes, data;
   try {
-    ({ response: airtableRes, body: data } = await writeToAirtable({ ...fields, ...tracking }));
+    const airtableTracking = {};
+    for (const column of AIRTABLE_TRACKING_COLUMNS) {
+      if (tracking[column]) airtableTracking[column] = tracking[column];
+    }
+
+    ({ response: airtableRes, body: data } = await writeToAirtable({ ...fields, ...airtableTracking }));
 
     // Airtable lehnt unbekannte Feldnamen komplett ab. Wenn die Tracking-Spalten
     // fehlen, lieber die Anfrage ohne Tracking speichern als sie zu verlieren.
     const unknownField = data?.error?.type === 'UNKNOWN_FIELD_NAME';
-    if (!airtableRes.ok && unknownField && Object.keys(tracking).length) {
+    if (!airtableRes.ok && unknownField && Object.keys(airtableTracking).length) {
       log('warn', 'airtable_tracking_fields_missing', {
         message: data?.error?.message,
-        retryingWithout: Object.keys(tracking),
+        retryingWithout: Object.keys(airtableTracking),
       });
       ({ response: airtableRes, body: data } = await writeToAirtable(fields));
     }
