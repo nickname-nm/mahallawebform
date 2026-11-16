@@ -542,7 +542,13 @@ footer a:hover{color:var(--bone)}
     };
     var pax=parseInt(get('gaeste'),10);
     if(pax>0)fields['PAX']=pax;
-    return {formType:'location',fields:fields};
+    // Zusätzlich strukturiert: /api/inquiry schreibt das in die UTM-Spalten der Tabelle.
+    var trackingFields={
+      utm_source:utm[0],utm_medium:utm[1],utm_campaign:utm[2],utm_content:utm[3],
+      referrer:document.referrer||'',
+      landing_page:location.origin+location.pathname
+    };
+    return {formType:'location',fields:fields,tracking:trackingFields};
   }
 
   // Schlägt still fehl, wenn kein Tag geladen ist.
